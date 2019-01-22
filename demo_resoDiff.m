@@ -12,22 +12,28 @@ map1=rgb2gray(imread('Fr1_5.png','png'));
 map2=rgb2gray(imread('Fr2_5.png','png'));
 % imshowpair(map1,map2);
 tic;
-%% 选取特殊点   
-% 1.选取harris角点最强点200个 
-% 2.均匀分布选取harris角点最强点200个    (current) 
-% imshow(map1);hold on;
-cornersM1=detectHarrisFeatures(map1);%plot(selectUniform(cornersM1,200,size(map1)));%selectUniform(cornersM1,300,size(map1));
-seleCorM1=cornersM1.selectStrongest(300);
-% plot(seleCorM1);
 
-% figure;
-% imshow(map2);hold on;
-cornersM2=detectHarrisFeatures(map2);
-seleCorM2=cornersM2.selectStrongest(300);
-% plot(seleCorM2);
 
-zSeleCorM1=cornerPoints(seleCorM1.Location/s,'Metric',seleCorM1.Metric);
-zSeleCorM2=cornerPoints(seleCorM2.Location/s,'Metric',seleCorM2.Metric);
+% %% 选取特殊点   
+% % 1.选取harris角点最强点200个 
+% % 2.均匀分布选取harris角点最强点200个    (current) 
+% % imshow(map1);hold on;
+% cornersM1=detectHarrisFeatures(map1);%plot(selectUniform(cornersM1,200,size(map1)));%selectUniform(cornersM1,300,size(map1));
+% seleCorM1=cornersM1.selectStrongest(300);
+% % plot(seleCorM1);
+% 
+% % figure;
+% % imshow(map2);hold on;
+% cornersM2=detectHarrisFeatures(map2);
+% seleCorM2=cornersM2.selectStrongest(300);
+% % plot(seleCorM2);
+% 
+% zSeleCorM1=cornerPoints(seleCorM1.Location/s,'Metric',seleCorM1.Metric);
+% zSeleCorM2=cornerPoints(seleCorM2.Location/s,'Metric',seleCorM2.Metric);
+%% 寻找高斯差分极值
+cornersM1 = detectSURFFeatures(map1);
+cornersM2 = detectSURFFeatures(map2);
+
 %%  提取二维点云
 [pcMap3d1,pointCMap1]=exarctPCfroImg(map1);
 [pcMap3d2,pointCMap2]=exarctPCfroImg(map2);
@@ -45,10 +51,10 @@ plot(zSeleCorM2);
 axis equal
 %%  获取描述子
 
-[M1Desp,M1Seed,M1Norm]=exarctEIG2d(pointCMap1,gridStep,zSeleCorM1);
-[M2Desp,M2Seed,M2Norm]=exarctEIG2d(pointCMap2,gridStep,zSeleCorM2);
+[M1Desp,M1Scale,M1Seed,M1Norm]=exarctEIG2d(pointCMap1,gridStep,cornersM1); %zSeleCorM1
+[M2Desp,M2Scale,M2Seed,M2Norm]=exarctEIG2d(pointCMap2,gridStep,cornersM2); % zSeleCorM2
 %%  匹配
-Motion=eigMatch2D(M1Desp,M2Desp,M1Seed,M2Seed,M1Norm,M2Norm,overlap,gridStep);
+Motion=eigMatch2D(M1Desp,M2Desp,M1Scale,M2Scale,M1Seed,M2Seed,M1Norm,M2Norm,overlap,gridStep);
 
 
 %% testcode

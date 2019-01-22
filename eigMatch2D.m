@@ -1,4 +1,4 @@
-function T = eigMatch2D(srcDesp,tarDesp,srcSeed,tarSeed,srcNorm,tarNorm,overlap,gridStep)
+function T = eigMatch2D(srcDesp,tarDesp,srcScale,tarScale,srcSeed,tarSeed,srcNorm,tarNorm,overlap,gridStep)
 %% parameter configuration for flann search
 params.algorithm = 'kdtree';
 params.trees = 8;

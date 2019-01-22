@@ -1,5 +1,6 @@
-function [srcDesp,srcSeed,srcNorm] = exarctEIG2d(srcData,gridStep,specPoint)
-% This code is the modified version of source code of Matlab implimentation of the paper, 
+function [srcDesp,srcScale,srcSeed,srcNorm] = exarctEIG2d(srcData,gridStep,specPoint,zoomVar)
+% This code is the modified version of source code of Matlab implimentation
+% of the paper, -vickylzy
 % "Fast Descriptors and Correspondence Propagation for Robust Global Point Cloud Registration,"
 % IEEE transactions on Image Processing, 2017.
 % This code should be used only for academic research.         
@@ -13,18 +14,25 @@ srcSeed=specPoint.Location';
 srcData=srcData';
 %% compute descriptors for seed points in the source point cloud
 K = length(radii);
-srcIdx = rangesearch(srcData',srcSeed',radii(1)); %寻找seed周radii(1)内的所有点云点
+
+srcIdx = rangeSearchDiffR(srcData,radii(1),specPoint,zoomVar);
+%已改编写为函数rangeSearchDiffR以改进速度srcIdx2=arrayfun(@(a)rangesearch(srcData',[a.Location(1,1),a.Location(1,2)],radii(1)*a.Scale/zoomVar),specPoint,'UniformOutput', true);
+
+%srcIdx = rangesearch(srcData',srcSeed',radii(1));%等长搜查 %寻找seed周radii(1)内的所有点云点
 idxSz = cellfun(@length,srcIdx,'uni',true);
 srcIdx = srcIdx(idxSz>10);          %选取周遭点超过10个的有代表性兴趣点（好生成描述）
 srcSeed = srcSeed(:,idxSz>10);
+srcScale = num2cell((specPoint.Scale(idxSz>10))/zoomVar);
+specPoint = specPoint(idxSz>10);
 M = sum(idxSz>10);
 idx = num2cell((1:M)');
-[s,n] = cellfun(@(x,y)svdCov(x,y,srcData,srcSeed),srcIdx,idx,'uni',false);
+[s,n] = cellfun(@(x,y,z)svdCov(x,y,z,srcData,srcSeed),srcIdx,idx,srcScale,'uni',false);
 s = cell2mat(s); %每个specialpoint 的特征值 2*n   变成 1*2n
 n = cell2mat(n); %每个specialpoint 的第二个特征值的特征向量 2*n 变成 1*2n
 for k = 2:K
-    srcIdx = rangesearch(srcData',srcSeed',radii(k));
-    [sk,nk] = cellfun(@(x,y)svdCov(x,y,srcData,srcSeed),srcIdx,idx,'uni',false);
+    srcIdx = rangeSearchDiffR(srcData,radii(k),specPoint,zoomVar);
+%  %等长搜查   srcIdx = rangesearch(srcData',srcSeed',radii(k));
+    [sk,nk] = cellfun(@(x,y,z)svdCov(x,y,z,srcData,srcSeed),srcIdx,idx,srcScale,'uni',false);
     s = [s cell2mat(sk)];
     n = [n cell2mat(nk)];
 end
