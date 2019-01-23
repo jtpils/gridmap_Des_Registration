@@ -1,4 +1,4 @@
-function T = eigMatch2D(srcDesp,tarDesp,srcScale,tarScale,srcSeed,tarSeed,srcNorm,tarNorm,overlap,gridStep)
+function T = eigMatch2D(srcDesp,tarDesp,srcScale,tarScale,srcSeed,tarSeed,srcNorm,tarNorm,overlap,gridStep,srcMap,tarMap,s)
 %% parameter configuration for flann search
 params.algorithm = 'kdtree';
 params.trees = 8;
@@ -24,10 +24,12 @@ for i = 1:ceil(0.2*N) %对每一对儿
 %   for n = 1:N
     seed = srcSeed(:,seedIdx(n));
     seedNorm = srcNorm(:,seedIdx(n));
+    seedScale = srcScale(seedIdx(n));
      %%  当前点特征向量与所有其他特殊点的內积
     % source point cloud
     d = bsxfun(@minus,srcSeed,seed);
     d = sqrt(sum(d.^2,1)); % distance of 其他特殊点距离当前特殊点距离
+    d = d./(seedScale);%尺度还原
     inProd = bsxfun(@times,srcNorm,seedNorm);    %当前特殊点四个特征向量与其他特征点四个特征向量内积
     inProd = inProd(1:2:end,:) + inProd(2:2:end,:) ;
     theta = real(acosd(inProd));  % inner product
@@ -35,11 +37,13 @@ for i = 1:ceil(0.2*N) %对每一对儿
     % target point cloud
     r = bsxfun(@minus,tarSeed,tarSeed(:,n));
     r = sqrt(sum(r.^2,1)); % distance of 其他特殊点距离当前特殊点距离
+    r = r./(tarScale(n));
     inProd = bsxfun(@times,tarNorm,tarNorm(:,n));
     inProd = inProd(1:2:end,:) + inProd(2:2:end,:);
     alpha = real(acosd(inProd));  % inner product   
     
 %% r,d 分别是当前特殊点与其他各个特殊点欧氏距离，IDX求距离接近的可能的拓展点对儿
+    %由于修正 rd为已经平衡过尺度的距离描述
     IDX = rangesearch(r',d',gridStep/2,'distance','cityblock');    %cityblock曼哈顿距离，这里是一维数据可能只是为了加快速度
     
     matches = [seedIdx(n) n];
@@ -63,6 +67,19 @@ for i = 1:ceil(0.2*N) %对每一对儿
             matches = [matches; m idx(ol)];
         end
     end
+    %% 辅助
+    figure;
+    mapPair = joinImage(srcMap,tarMap);
+    imshow(mapPair);
+    xdistance = size(srcMap,2);
+    match_srcSeed = srcSeed(:,matches(:,1));
+    match_tarSeed = tarSeed(:,matches(:,2));
+    showPoint(match_srcSeed*s);
+    showTarSeed = match_tarSeed*s;
+    showTarSeed(1,:)=showTarSeed(1,:)+xdistance;
+    showPoint(showTarSeed)
+    close all
+    %%
     if(size(matches,1)>10)
         match_srcSeed = srcSeed(:,matches(:,1));
         match_tarSeed = tarSeed(:,matches(:,2));
@@ -86,9 +103,9 @@ for i = 1:ceil(0.2*N) %对每一对儿
         [dist,ind] = sort(dist);        
         Err(n) = sum(sum((tarEst(:,index(ind(1:ovNum)))-tarSeed(:,ind(1:ovNum))).^2));
         
-        if(n==102)
-            save('dataBestMatch2d.mat');
-        end
+%         if(n==102)
+%             save('dataBestMatch2d.mat');
+%         end
         
     end
     if (size(matches,1)> 0.65*size(srcDesp,2))

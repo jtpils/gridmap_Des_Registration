@@ -42,6 +42,6 @@ srcDesp = reshape(ds,2*(K-1),[]);    %得到特征值差值后变回来 ，每个点有3组特征值
 n = mat2cell(n,2*ones(M,1),K);
 srcNorm = cellfun(@(x)reshape(x,[],1),n','uni',false);
 srcNorm = cell2mat(srcNorm);
-
+srcScale= cell2mat(srcScale');
 end
 
