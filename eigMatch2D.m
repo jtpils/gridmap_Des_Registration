@@ -19,7 +19,7 @@ distThr = 0.2/4*length(radii);
 thetaThr = 10; 
 threshold = gridStep*gridStep;
 %对每一对匹配进行一次循环，求得一个最优变换
-for i = 1:ceil(0.2*N) %对每一对儿
+for i = 1:ceil(0.5*N) %对每一对儿  0.2
     n= id(i);
 %   for n = 1:N
     seed = srcSeed(:,seedIdx(n));
@@ -68,33 +68,39 @@ for i = 1:ceil(0.2*N) %对每一对儿
         end
     end
     %% 辅助
-    figure;
-    mapPair = joinImage(srcMap,tarMap);
-    imshow(mapPair);
-    xdistance = size(srcMap,2);
-    match_srcSeed = srcSeed(:,matches(:,1));
-    match_tarSeed = tarSeed(:,matches(:,2));
-    showPoint(match_srcSeed*s);
-    showTarSeed = match_tarSeed*s;
-    showTarSeed(1,:)=showTarSeed(1,:)+xdistance;
-    showPoint(showTarSeed)
-    close all
+%     figure;
+%     mapPair = joinImage(srcMap,tarMap);
+%     imshow(mapPair);
+%     xdistance = size(srcMap,2);
+%     match_srcSeed = srcSeed(:,matches(:,1));
+%     match_tarSeed = tarSeed(:,matches(:,2));
+%     showPoint(match_srcSeed*s);
+%     showTarSeed = match_tarSeed*s;
+%     showTarSeed(1,:)=showTarSeed(1,:)+xdistance;
+%     showPoint(showTarSeed)
+%     close all
     %%
-    if(size(matches,1)>10)
+    if(size(matches,1)>4)
         match_srcSeed = srcSeed(:,matches(:,1));
         match_tarSeed = tarSeed(:,matches(:,2));
-        match_srcSeed3d=[match_srcSeed;zeros(1,size(match_srcSeed,2))];
-        match_tarSeed3d=[match_tarSeed;zeros(1,size(match_tarSeed,2))];
-        CS = ransac(double(match_srcSeed3d),double(match_tarSeed3d),threshold);   
-        %淘汰不可靠的对儿，然后用可靠对儿去估计运动
-        if(sum(CS)<3)%可靠对儿少于3时不再计算
-            continue;
+        try
+            [T2d,inliners,outliners] = estimateGeometricTransform(match_srcSeed',match_tarSeed','similarity');
+        catch
+            continue
         end
+        T2d = T2d.T';
+%         match_srcSeed3d=[match_srcSeed;zeros(1,size(match_srcSeed,2))];
+%         match_tarSeed3d=[match_tarSeed;zeros(1,size(match_tarSeed,2))];
+%         CS = ransac(double(match_srcSeed3d),double(match_tarSeed3d),threshold);   
+        %淘汰不可靠的对儿，然后用可靠对儿去估计运动
+%         if(length(inliners)<2)%可靠对儿少于3时不再计算
+%             continue;
+%         end
         
-        match_srcSeed3d = match_srcSeed3d(:,CS);
-        match_tarSeed3d = match_tarSeed3d(:,CS);
-        [T, Eps] = estimateRigidTransform(match_tarSeed3d, match_srcSeed3d);
-        T2d=[T(1:2,1:2),T(1:2,4); [0 0 1]];
+%         match_srcSeed3d = match_srcSeed3d(:,CS);
+%         match_tarSeed3d = match_tarSeed3d(:,CS);
+%         [T, Eps] = estimateRigidTransform(match_tarSeed3d, match_srcSeed3d);
+%         T2d=[T(1:2,1:2),T(1:2,4); [0 0 1]];
         tarEst = T2d*[srcSeed;ones(1,M)];
         tarEst = tarEst(1:2,:);
         tform{n} = T2d;
@@ -115,6 +121,6 @@ for i = 1:ceil(0.2*N) %对每一对儿
 [v,idx] = min(Err);
 T = tform{idx};
 if(isempty(T))
-    disp(['match Failed with tarseed:' num2str(length(tarSeed)) ' srcSeed:' num2str(length(srcSeed)) ]);
+    error(['match Failed with tarseed:' num2str(length(tarSeed)) ' srcSeed:' num2str(length(srcSeed)) ]);
 end
 end
