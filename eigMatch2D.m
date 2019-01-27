@@ -74,15 +74,24 @@ for i = 1:ceil(0.5*N) %对每一对儿  0.2
 %     xdistance = size(srcMap,2);
 %     match_srcSeed = srcSeed(:,matches(:,1));
 %     match_tarSeed = tarSeed(:,matches(:,2));
-%     showPoint(match_srcSeed*s);
 %     showTarSeed = match_tarSeed*s;
 %     showTarSeed(1,:)=showTarSeed(1,:)+xdistance;
-%     showPoint(showTarSeed)
+%     showLineMulti(match_srcSeed',showTarSeed');
 %     close all
     %%
     if(size(matches,1)>4)
         match_srcSeed = srcSeed(:,matches(:,1));
         match_tarSeed = tarSeed(:,matches(:,2));
+        %% 辅助
+%         figure;
+%         mapPair = joinImage(srcMap,tarMap);
+%         imshow(mapPair);
+%         xdistance = size(srcMap,2);
+%         showTarSeed = match_tarSeed*s;
+%         showTarSeed(1,:)=showTarSeed(1,:)+xdistance;
+%         showLineMulti(match_srcSeed'*s,showTarSeed');
+%         close 
+        %%
         try
             [T2d,inliners,outliners] = estimateGeometricTransform(match_srcSeed',match_tarSeed','similarity');
         catch
