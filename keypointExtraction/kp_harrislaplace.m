@@ -28,7 +28,7 @@ function points = kp_harrislaplace(img)
     img_width   = size(img,2);
 
     % SCALE PARAMETERS
-    sigma_begin = 3;
+    sigma_begin = 1.5;%3
     sigma_step  = 1.2;
     sigma_nb    = 15;
     sigma_array = (sigma_step.^(0:sigma_nb-1))*sigma_begin;
