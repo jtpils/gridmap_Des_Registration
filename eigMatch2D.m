@@ -76,7 +76,7 @@ for i = 1:ceil(0.5*N) %对每一对儿  0.2
 %     match_tarSeed = tarSeed(:,matches(:,2));
 %     showTarSeed = match_tarSeed*s;
 %     showTarSeed(1,:)=showTarSeed(1,:)+xdistance;
-%     showLineMulti(match_srcSeed',showTarSeed');
+%     showLineMulti(match_srcSeed'*s,showTarSeed');
 %     close all
     %%
     if(size(matches,1)>4)

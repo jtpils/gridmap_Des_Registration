@@ -1,3 +1,17 @@
+
+
+figure;
+mapPair = joinImage(srcMap,tarMap);
+imshow(mapPair);
+xdistance = size(srcMap,2);
+match_srcSeed = srcSeed(:,matches(:,1));
+match_tarSeed = tarSeed(:,matches(:,2));
+showTarSeed = match_tarSeed*s;
+showTarSeed(1,:)=showTarSeed(1,:)+xdistance;
+showLineMulti(match_srcSeed'*s,showTarSeed');
+
+return
+%%
 clc;clear;close all;
 addpath('./flann/');
 addpath('./estimateRigidTransform');
