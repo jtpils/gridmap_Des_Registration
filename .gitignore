@@ -1,3 +1,7 @@
 *.asv
+*.png
+*.jpg
 codegen
 vlfeat-0.9.21
+*.docx
+!paper\栅格地图拼接_latest1.docx

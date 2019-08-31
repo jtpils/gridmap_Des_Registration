@@ -15,8 +15,8 @@ zoomVar=1;
 downStep=0.08;
 
 %% 转灰度
-map1=rgb2gray(imread('Fr1_3.png','png'));
-map2=rgb2gray(imread('Fr2_3.png','png'));
+map1=rgb2gray(imread('Fr1_3.png'));
+map2=rgb2gray(imread('Fr2_3.png'));
 map1 = imresize(map1,1.0);
 map2 = imresize(map2,1.3);
 % imshowpair(map1,map2);
@@ -146,7 +146,7 @@ testcode
 close all; plot(s*pointCMap1(:,1),s*pointCMap1(:,2),'.'); hold on plot(s*M1Seed(1,:)',s*M1Seed(2,:)','.','MarkerSize',10 ,'color','red');
 
 %% 修正尺度 
-s=SQRT((S*COS(THETA))^2+(S*SIN(THETA))^2)
+% s=SQRT((S*COS(THETA))^2+(S*SIN(THETA))^2)
 %%根据相似变换和比例公式推倒缩放因子
 scaleC=sqrt(sum(Motion(1:2,1).^2));
 pointCMap1Scaled = pointCMap1*scaleC;

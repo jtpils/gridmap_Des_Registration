@@ -8,8 +8,11 @@ icpSteps=100;
 TrMin=0.2;
 TrMax=1.0;
 %% 转灰度
-map1=rgb2gray(imread('Fr1_5.png','png'));
-map2=rgb2gray(imread('Fr2_5.png','png'));
+
+% map1=rgb2gray(imread('Fr1_5.png','png'));
+% map2=rgb2gray(imread('Fr2_5.png','png'));
+map1=rgb2gray(imread('..\map_data\pair1\Intel1_301_700.png','png'));
+map2=rgb2gray(imread('..\map_data\pair1\lmap-02.png','png'));
 % imshowpair(map1,map2);
 tic;
 %% 选取特殊点   
