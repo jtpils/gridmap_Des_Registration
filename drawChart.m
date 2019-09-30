@@ -40,9 +40,9 @@ datasheet_report_loop5 = datasheet_report;
 
 %% plot multi line
 
-load('fr_scale.mat')
-load('intel_scale.mat')
-load('loop5_scale.mat')
+load('./result_scale/fr_scale.mat')
+load('./result_scale/intel_scale.mat')
+load('./result_scale/loop5_scale.mat')
 figure;
 hold on;
 lineWid = 1;
@@ -58,9 +58,9 @@ line_handler_loop5.LineWidth=lineWid+0.2;
 grid on;
 currAxis=gca;
 currAxis.XTick=[1:0.5:6];
-currAxis.YTick=[-0.5:0.5:4];
+currAxis.YTick=[-1:1:4];
 currAxis.XTickLabel
 axis([1,6,-0.5,4]);
 xlabel('{\fontsize{12}Scal{e_P} : Scal{e_Q}}')    ;
 ylabel('{\fontsize{12}\DeltaScale}')    ;
-legend({'Freiburg, Building 079','Intel Reserach Lab^{[8]}','LSRC, D-Wing^{[10]}'},'Location','northwest')
+legend({'Fr079','Intel/2','Loop5'},'Location','northwest')
