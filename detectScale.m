@@ -1,4 +1,4 @@
-function [point_scale] = detectScale(Model,Data_point,grid_step,max_scale_size)
+function [genreate_points] = detectScale(Model,Data_point,grid_step,max_scale_size)
 %DETECTSCALE detect maximum recall scale of given point in Model
 %   此处显示详细说明
 
@@ -41,6 +41,11 @@ for i=1:N
     %% select three highest
     point_scale(i,:) = locs(1:3);
 end
+    point_with_scale = [repmat(Data_point,3,1),[point_scale(:,1);point_scale(:,2);point_scale(:,3)]];
+    select_index=(point_with_scale(:,3)>=5) & (point_with_scale(:,3)<=150);
+    selecet_points = point_with_scale(select_index,:);
+    genreate_points = HarrisGridPoints(selecet_points(:,1:2),selecet_points(:,3));
+
 end
 
 

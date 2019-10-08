@@ -2,7 +2,7 @@ clc;clear;close all;
 addpath('./flann/');
 addpath('./estimateRigidTransform');
 s=100;
-gridStep=0.1;
+gridStep=1;
 overlap=0.2;
 icpSteps=100;
 TrMin=0.2;
